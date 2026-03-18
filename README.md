@@ -147,6 +147,10 @@ This can cause session conflicts and break the bot.
 ---
 
 ## ⚠️ Disclaimer
+SCRIPT WILL CRASH IF GFG ASKS FOR FEEDBACK JUST LOGIN MANUALLY AND GIVE ONE START FEEDBACK SUBMIT THEN RERUN THE SCRIPT 
+
+
+
 make sure faculties never get to know about this 
 ---
 
