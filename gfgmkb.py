@@ -69,6 +69,17 @@ class GFGVideoAutomator:
         logging.info("Initializing Selenium for Videos...")
         return webdriver.Chrome(options=options)
 
+    def dismiss_popups(self):
+        try:
+            close_btns = self.driver.find_elements(By.XPATH, "//button[normalize-space()='Close']")
+            for btn in close_btns:
+                if btn.is_displayed():
+                    logging.info("Intercepted a pop-up! Smashing the Close button...")
+                    self.driver.execute_script("arguments[0].click();", btn)
+                    time.sleep(1)
+        except Exception:
+            pass
+
     def inject_anti_pause_script(self):
         script = """
             try {
@@ -152,6 +163,7 @@ class GFGVideoAutomator:
 
     def exhaust_accordion(self, acc_idx):
         while True:
+            self.dismiss_popups()
             self.wait.until(EC.presence_of_all_elements_located(self.SELECTORS['accordion_arrow']))
             time.sleep(2)
             arrows = self.driver.find_elements(*self.SELECTORS['accordion_arrow'])
@@ -166,7 +178,7 @@ class GFGVideoAutomator:
             if "batch_open" not in parent_div.get_attribute("class"):
                 self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", arrow)
                 time.sleep(0.5)
-                arrow.click()
+                self.driver.execute_script("arguments[0].click();", arrow) # JS Click override
                 time.sleep(1.5)
 
             menus = self.get_valid_tab_menus()
@@ -185,7 +197,7 @@ class GFGVideoAutomator:
                     tab_name = tab.text.strip()
                     self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", tab)
                     time.sleep(0.5)
-                    tab.click()
+                    self.driver.execute_script("arguments[0].click();", tab) # JS Click override
                     time.sleep(1.5)
                     
                     logging.info(f"Scanning Tab: [{tab_name}] in '{section_title}'")
@@ -204,6 +216,7 @@ class GFGVideoAutomator:
                     return 
 
     def scan_and_process_rows(self, container_div):
+        self.dismiss_popups()
         rows = container_div.find_elements(*self.SELECTORS['batch_item'])
         visible_rows = [r for r in rows if r.is_displayed()]
         for row in visible_rows:
@@ -227,7 +240,7 @@ class GFGVideoAutomator:
                 logging.info(f"Target Sub-Section Found: '{row_title}'. Entering player...")
                 self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", btn)
                 time.sleep(0.5)
-                btn.click()
+                self.driver.execute_script("arguments[0].click();", btn) # JS Click override
                 time.sleep(3) 
                 
                 self.watch_videos_in_player(row_title)
@@ -242,7 +255,7 @@ class GFGVideoAutomator:
     def watch_videos_in_player(self, row_title):
         try:
             video_tab = self.fast_wait.until(EC.element_to_be_clickable(self.SELECTORS['video_sidebar_tab']))
-            video_tab.click()
+            self.driver.execute_script("arguments[0].click();", video_tab)
             time.sleep(2) 
         except TimeoutException:
             logging.warning(f"No 'Videos' sidebar tab found in '{row_title}'. Completing early.")
@@ -354,6 +367,17 @@ class GFGArticleAutomator:
         logging.info("Initializing Selenium for Articles...")
         return webdriver.Chrome(options=options)
 
+    def dismiss_popups(self):
+        try:
+            close_btns = self.driver.find_elements(By.XPATH, "//button[normalize-space()='Close']")
+            for btn in close_btns:
+                if btn.is_displayed():
+                    logging.info("Intercepted a pop-up! Smashing the Close button...")
+                    self.driver.execute_script("arguments[0].click();", btn)
+                    time.sleep(1)
+        except Exception:
+            pass
+
     def is_item_completed(self, element):
         try:
             images = element.find_elements(By.TAG_NAME, 'img')
@@ -400,6 +424,7 @@ class GFGArticleAutomator:
 
     def exhaust_accordion(self, acc_idx):
         while True:
+            self.dismiss_popups()
             self.wait.until(EC.presence_of_all_elements_located(self.SELECTORS['accordion_arrow']))
             time.sleep(2)
             arrows = self.driver.find_elements(*self.SELECTORS['accordion_arrow'])
@@ -414,7 +439,7 @@ class GFGArticleAutomator:
             if "batch_open" not in parent_div.get_attribute("class"):
                 self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", arrow)
                 time.sleep(0.5)
-                arrow.click()
+                self.driver.execute_script("arguments[0].click();", arrow) # JS Click override
                 time.sleep(1.5)
 
             menus = self.get_valid_tab_menus()
@@ -430,7 +455,7 @@ class GFGArticleAutomator:
                     tab = fresh_tabs[tab_idx]
                     self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", tab)
                     time.sleep(0.5)
-                    tab.click()
+                    self.driver.execute_script("arguments[0].click();", tab) # JS Click override
                     time.sleep(1.5)
                     
                     if self.scan_and_process_rows(parent_div):
@@ -442,6 +467,7 @@ class GFGArticleAutomator:
                 else: return 
 
     def scan_and_process_rows(self, container_div):
+        self.dismiss_popups()
         rows = container_div.find_elements(*self.SELECTORS['batch_item'])
         for row in [r for r in rows if r.is_displayed()]:
             try: row_title = row.find_element(*self.SELECTORS['item_title']).text.strip().split('\n')[0]
@@ -461,7 +487,7 @@ class GFGArticleAutomator:
                 logging.info(f"Target Article Section: '{row_title}'. Entering...")
                 self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", btn)
                 time.sleep(0.5)
-                btn.click()
+                self.driver.execute_script("arguments[0].click();", btn) # JS Click override
                 time.sleep(3) 
                 
                 self.read_articles_in_player(row_title)
@@ -476,7 +502,7 @@ class GFGArticleAutomator:
     def read_articles_in_player(self, row_title):
         try:
             article_tab = self.fast_wait.until(EC.element_to_be_clickable(self.SELECTORS['article_sidebar_tab']))
-            article_tab.click()
+            self.driver.execute_script("arguments[0].click();", article_tab)
             time.sleep(2) 
         except TimeoutException: return
 
@@ -506,7 +532,8 @@ class GFGArticleAutomator:
                     time.sleep(4)
                     stuck_counter = 0
                     try:
-                        self.fast_wait.until(EC.element_to_be_clickable(self.SELECTORS['article_sidebar_tab'])).click()
+                        tab = self.fast_wait.until(EC.element_to_be_clickable(self.SELECTORS['article_sidebar_tab']))
+                        self.driver.execute_script("arguments[0].click();", tab)
                         time.sleep(2)
                     except TimeoutException: pass
                     continue
@@ -584,6 +611,17 @@ class GFGQuizAutomator:
         logging.info("Initializing Selenium for Quizzes...")
         return webdriver.Chrome(options=options)
 
+    def dismiss_popups(self):
+        try:
+            close_btns = self.driver.find_elements(By.XPATH, "//button[normalize-space()='Close']")
+            for btn in close_btns:
+                if btn.is_displayed():
+                    logging.info("Intercepted a pop-up! Smashing the Close button...")
+                    self.driver.execute_script("arguments[0].click();", btn)
+                    time.sleep(1)
+        except Exception:
+            pass
+
     def inject_anti_pause_script(self):
         script = """
             try {
@@ -630,6 +668,7 @@ class GFGQuizAutomator:
 
     def exhaust_accordion(self, acc_idx):
         while True:
+            self.dismiss_popups()
             self.wait.until(EC.presence_of_all_elements_located(self.SELECTORS['accordion_arrow']))
             time.sleep(2)
             arrows = self.driver.find_elements(*self.SELECTORS['accordion_arrow'])
@@ -644,7 +683,7 @@ class GFGQuizAutomator:
             if "batch_open" not in parent_div.get_attribute("class"):
                 self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", arrow)
                 time.sleep(0.5)
-                arrow.click()
+                self.driver.execute_script("arguments[0].click();", arrow) # JS Click override
                 time.sleep(1.5)
 
             menus = self.get_valid_tab_menus()
@@ -660,7 +699,7 @@ class GFGQuizAutomator:
                     tab = fresh_tabs[tab_idx]
                     self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", tab)
                     time.sleep(0.5)
-                    tab.click()
+                    self.driver.execute_script("arguments[0].click();", tab) # JS Click override
                     time.sleep(1.5)
                     
                     if self.scan_and_process_rows(parent_div):
@@ -672,6 +711,7 @@ class GFGQuizAutomator:
                 else: return 
 
     def scan_and_process_rows(self, container_div):
+        self.dismiss_popups()
         rows = container_div.find_elements(*self.SELECTORS['batch_item'])
         for row in [r for r in rows if r.is_displayed()]:
             try: row_title = row.find_element(*self.SELECTORS['item_title']).text.strip().split('\n')[0]
@@ -691,7 +731,7 @@ class GFGQuizAutomator:
                 logging.info(f"Target Quiz Section: '{row_title}'. Entering...")
                 self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", btn)
                 time.sleep(0.5)
-                btn.click()
+                self.driver.execute_script("arguments[0].click();", btn) # JS Click override
                 time.sleep(3) 
                 
                 self.solve_quiz_in_player(row_title)
@@ -707,7 +747,7 @@ class GFGQuizAutomator:
         self.inject_anti_pause_script()
         try:
             quiz_tab = self.fast_wait.until(EC.element_to_be_clickable(self.SELECTORS['mcq_sidebar_tab']))
-            quiz_tab.click()
+            self.driver.execute_script("arguments[0].click();", quiz_tab)
             time.sleep(2) 
         except TimeoutException: pass
 
@@ -836,3 +876,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
