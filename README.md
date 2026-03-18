@@ -56,8 +56,8 @@ Restart PowerShell after installation.
 ### Step 2 — Clone & Run
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
-cd YOUR_REPO_NAME
+git clone https://github.com/istgsatya/gfgcheese.git
+cd gfgcheese
 py gfgmkb.py
 ```
 
@@ -147,7 +147,7 @@ This can cause session conflicts and break the bot.
 ---
 
 ## ⚠️ Disclaimer
-make sure faculties dont find about me 
+make sure faculties never get to know about this 
 ---
 
-just let it run overnight 
+just let it run overnight problem solving will be there soon  
